@@ -1,14 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
 
 class MemoList extends React.Component {
   render() {
     return (
       <View style={styles.memolist}>
-        <View style={styles.memolistItem}>
-          <Text style={styles.memoTitle}>講座のアイテム</Text>
-          <Text style={styles.memoDate}>2019/10/10</Text>
-        </View>
+
+        <TouchableHighlight onPress={() => { this.props.navigation.navigate('MemoDetail'); }}>
+          <View style={styles.memolistItem}>
+            <Text style={styles.memoTitle}>講座のアイテム</Text>
+            <Text style={styles.memoDate}>2019/10/10</Text>
+          </View>
+        </TouchableHighlight>
 
         <View style={styles.memolistItem}>
           <Text style={styles.memoTitle}>講座のアイテム</Text>
