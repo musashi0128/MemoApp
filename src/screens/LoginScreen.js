@@ -1,17 +1,54 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View, TouchableHighlight } from 'react-native';
+import firebase from 'firebase';
 
 class LoginScreen extends React.Component {
+  state = {
+    email : '',
+    password: '',
+  }
+
+  // eslint-disable-next-line
+  handleSubmit() {
+    // Login処理
+    firebase
+      .auth()
+      .signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then((user) => {
+        this.props.navigation.navigate('Home');
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   render() {
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Login</Text>
-        <TextInput style={styles.input} value="Email Address" />
-        <TextInput style={styles.input} value="Password" />
+        <TextInput
+          style={styles.input}
+          value={this.state.email}
+          onChangeText={(text) => { this.setState({ email:text }); }}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Email Address"
+          underlineColorAndroid="transparent"
+        />
+        <TextInput
+          style={styles.input}
+          value={this.state.password}
+          onChangeText={(text) => { this.setState({ password:text }); }}
+          autoCapitalize="none"
+          autoCorrect={false}
+          placeholder="Password"
+          secureTextEntry
+          underlineColorAndroid="transparent"
+        />
         <TouchableHighlight
           style={styles.button}
           underlayColor="#C70F66"
-          onPress={() => { this.props.navigation.navigate('Home'); }}
+          onPress={this.handleSubmit.bind(this)}
         >
           <Text style={styles.buttonTitle}>Log in</Text>
         </TouchableHighlight>
