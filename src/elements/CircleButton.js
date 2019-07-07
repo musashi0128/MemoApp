@@ -1,7 +1,8 @@
 import React from 'react';
-import { StyleSheet, View, TouchableHighlight } from 'react-native';
 import { Font } from 'expo';
+
 import { createIconSet } from '@expo/vector-icons';
+import { StyleSheet, View, TouchableHighlight } from 'react-native';
 import fontAwsome from '../../assets/fonts/fa-solid-900.ttf';
 
 const CustomIcon = createIconSet({
@@ -24,6 +25,7 @@ class CircleButton extends React.Component {
 
   render() {
     const { name, style, color, onPress } = this.props;
+
     let bgColor = '#E31676';
     let textColor = '#fff';
 
@@ -31,12 +33,13 @@ class CircleButton extends React.Component {
       bgColor = '#fff';
       textColor = '#E31676';
     }
+
     return (
       <TouchableHighlight style={[styles.container, style]} onPress={onPress} underlayColor="transparent">
-        <View style={[styles.CircleButton, style, { backgroundColor: bgColor }]}>
+        <View style={[styles.circleButton, { backgroundColor: bgColor }]}>
           {
             this.state.fontLoaded ? (
-              <CustomIcon name={name} style={[styles.CircleButtonTitle, { color: textColor }]} />
+              <CustomIcon name={name} style={[styles.circleButtonTitle, { color: textColor }]} />
             ) : null
           }
         </View>
@@ -47,26 +50,28 @@ class CircleButton extends React.Component {
 
 const styles = StyleSheet.create({
   container: {
-    width: 48,
-    height: 48,
+    width: 64,
+    height: 64,
     position: 'absolute',
     bottom: 24,
     right: 24,
   },
-  CircleButton: {
+  circleButton: {
     width: 48,
     height: 48,
-    borderRadius:  24,
+    margin: 8,
+    borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: '#000',
-    shadowOffset: { width:0, height:2 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
+    elevation: 4,
   },
-  CircleButtonTitle: {
-    fontSize:  24,
-    lineHeight: 32,
+  circleButtonTitle: {
+    fontSize: 24,
+    lineHeight: 24,
   },
 });
 

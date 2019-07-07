@@ -1,33 +1,40 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableHighlight } from 'react-native';
+import { StyleSheet, View, Text, TouchableHighlight, FlatList } from 'react-native';
+
+// firebaseのTimestamp型をDate型に変換する
+const dateString = (date) => {
+  if (date == null) { return ''; }
+  const dateObject = date.toDate();
+  return dateObject.toISOString().split('T')[0];
+};
 
 class MemoList extends React.Component {
+  renderMemo({ item }) {
+    return (
+      <TouchableHighlight onPress={() => { this.props.navigation.navigate('MemoDetail', { memo: item }); }}>
+        <View style={styles.memoListItem}>
+          <Text style={styles.memoTitle}>{item.body.substring(0, 10)}</Text>
+          <Text style={styles.memoDate}>{dateString(item.createdOn)}</Text>
+        </View>
+      </TouchableHighlight>
+    );
+  }
+
   render() {
     return (
-      <View style={styles.memolist}>
-
-        <TouchableHighlight onPress={() => { this.props.navigation.navigate('MemoDetail'); }}>
-          <View style={styles.memolistItem}>
-            <Text style={styles.memoTitle}>講座のアイテム</Text>
-            <Text style={styles.memoDate}>2019/10/10</Text>
-          </View>
-        </TouchableHighlight>
-
-        <View style={styles.memolistItem}>
-          <Text style={styles.memoTitle}>講座のアイテム</Text>
-          <Text style={styles.memoDate}>2019/10/10</Text>
-        </View>
+      <View style={styles.memoList}>
+        <FlatList data={this.props.memoList} renderItem={this.renderMemo.bind(this)} />
       </View>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  memolist: {
+  memoList: {
     width: '100%',
     flex: 1,
   },
-  memolistItem: {
+  memoListItem: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',

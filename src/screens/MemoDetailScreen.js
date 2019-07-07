@@ -1,23 +1,45 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
+
 import CircleButton from '../elements/CircleButton';
 
+const dateString = (date) => {
+  if (date == null) { return ''; }
+  // firebaseのTimestamp型をDate型に変換する
+  const dateObject = date.toDate();
+  return dateObject.toISOString().split('T')[0];
+};
+
 class MemoDetailScreen extends React.Component {
+  state = {
+    memo: {},
+  }
+
+  componentWillMount() {
+    const { params } = this.props.navigation.state;
+    this.setState({ memo: params.memo });
+  }
+
+  returnMemo(memo) {
+    this.setState({ memo });
+  }
+
   render() {
+    const { memo } = this.state;
     return (
       <View style={styles.container}>
         <View>
           <View style={styles.memoHeader}>
             <View>
-              <Text style={styles.memoHeaderTitle}>講座のアイデア</Text>
-              <Text style={styles.memoHeaderDate}>2019/07/01</Text>
+              <Text style={styles.memoHeaderTitle}>{memo.body ? memo.body.substring(0, 10) : ''}</Text>
+              <Text style={styles.memoHeaderDate}>{dateString(memo.createdOn)}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.memoContent}>
           <Text style={styles.memoBody}>
-            講座のアイデアです。
+            {memo.body}
           </Text>
         </View>
 
@@ -25,7 +47,7 @@ class MemoDetailScreen extends React.Component {
           name="pencil"
           color="white"
           style={styles.editButton}
-          onPress={() => { this.props.navigation.navigate('MemoEdit'); }}
+          onPress={() => { this.props.navigation.navigate('MemoEdit', { memo, returnMemo: this.returnMemo.bind(this) }); }}
         />
       </View>
     );
@@ -66,7 +88,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
   editButton: {
-    top: 36,
+    top: 68,
   },
 });
 

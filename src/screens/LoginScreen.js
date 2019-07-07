@@ -1,35 +1,66 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View, TouchableHighlight } from 'react-native';
+import { SecureStore } from 'expo';
+import { StyleSheet, View, Text, TextInput, TouchableHighlight, TouchableOpacity } from 'react-native';
 import firebase from 'firebase';
+import { NavigationActions, StackActions } from 'react-navigation';
+
+import Loading from '../elements/Loading';
 
 class LoginScreen extends React.Component {
   state = {
-    email : '',
-    password: '',
+    email: 'user1@example.com',
+    password: 'password',
+    isLoading: false,
   }
 
-  // eslint-disable-next-line
-  handleSubmit() {
-    // Login処理
-    firebase
-      .auth()
-      .signInWithEmailAndPassword(this.state.email, this.state.password)
-      .then((user) => {
-        this.props.navigation.navigate('Home');
+  async componentDidMount() {
+    /*
+    const email = await SecureStore.getItemAsync('email');
+    const password = await SecureStore.getItemAsync('password');
+    firebase.auth().signInWithEmailAndPassword(email, password)
+      .then(() => {
+        this.setState({ isLoading: false });
+        this.navigateToHome();
       })
-      .catch((error) => {
-        console.log(error);
-      });
+      .catch();
+    */
+  }
+
+  navigateToHome() {
+    const resetAction = StackActions.reset({
+      index: 0,
+      actions: [
+        NavigationActions.navigate({ routeName: 'Home' }),
+      ],
+    });
+    this.props.navigation.dispatch(resetAction);
+  }
+
+  handleSubmit() {
+    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.password)
+      .then(() => {
+        SecureStore.setItemAsync('email', this.state.email);
+        SecureStore.setItemAsync('password', this.state.password);
+        this.navigateToHome();
+      })
+      .catch();
+  }
+
+  handlePress() {
+    this.props.navigation.navigate('Signup');
   }
 
   render() {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Login</Text>
+        <Loading text="ログイン中" isLoading={this.state.isLoading} />
+        <Text style={styles.title}>
+          ログイン
+        </Text>
         <TextInput
           style={styles.input}
           value={this.state.email}
-          onChangeText={(text) => { this.setState({ email:text }); }}
+          onChangeText={(text) => { this.setState({ email: text }); }}
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="Email Address"
@@ -38,20 +69,20 @@ class LoginScreen extends React.Component {
         <TextInput
           style={styles.input}
           value={this.state.password}
-          onChangeText={(text) => { this.setState({ password:text }); }}
+          onChangeText={(text) => { this.setState({ password: text }); }}
           autoCapitalize="none"
           autoCorrect={false}
           placeholder="Password"
           secureTextEntry
           underlineColorAndroid="transparent"
         />
-        <TouchableHighlight
-          style={styles.button}
-          underlayColor="#C70F66"
-          onPress={this.handleSubmit.bind(this)}
-        >
-          <Text style={styles.buttonTitle}>Log in</Text>
+        <TouchableHighlight style={styles.button} onPress={this.handleSubmit.bind(this)} underlayColor="#C70F66">
+          <Text style={styles.buttonTitle}>ログインする</Text>
         </TouchableHighlight>
+
+        <TouchableOpacity style={styles.signup} onPress={this.handlePress.bind(this)}>
+          <Text style={styles.signupText}>メンバー登録する</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -64,19 +95,18 @@ const styles = StyleSheet.create({
     padding: 24,
     backgroundColor: '#fff',
   },
-  title: {
-    fontSize: 28,
-    alignSelf: 'center',
-    marginBottom: 24,
-  },
   input: {
     backgroundColor: '#eee',
     height: 48,
     marginBottom: 16,
-    padding: 8,
     borderWidth: 1,
-    borderRadius: 3,
     borderColor: '#DDD',
+    padding: 8,
+  },
+  title: {
+    fontSize: 28,
+    alignSelf: 'center',
+    marginBottom: 24,
   },
   button: {
     backgroundColor: '#E31676',
@@ -90,6 +120,13 @@ const styles = StyleSheet.create({
   buttonTitle: {
     color: '#fff',
     fontSize: 18,
+  },
+  signup: {
+    marginTop: 16,
+    alignSelf: 'center',
+  },
+  signupText: {
+    fontSize: 16,
   },
 });
 

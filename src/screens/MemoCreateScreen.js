@@ -1,44 +1,24 @@
 import React from 'react';
 import { StyleSheet, KeyboardAvoidingView, TextInput } from 'react-native';
-
 import firebase from 'firebase';
 import { db } from '../../App';
 
 import CircleButton from '../elements/CircleButton';
 
-class MemoEditScreen extends React.Component {
+class MemoCreateScreen extends React.Component {
   state = {
     body: '',
-    key: '',
-  }
-
-  componentWillMount() {
-    const { params } = this.props.navigation.state;
-    this.setState({
-      body: params.memo.body,
-      key: params.memo.key,
-    });
   }
 
   handlePress() {
     const { currentUser } = firebase.auth();
-    // returnMemo に渡すので new Date() ではなくて firestore の Timestamp 型を直接使う
-    const newDate = firebase.firestore.Timestamp.now();
-    const docRef = db.collection(`users/${currentUser.uid}/memos`).doc(this.state.key);
-    docRef
-      .update({
-        body: this.state.body,
-        createdOn: newDate,
-      })
+    db.collection(`users/${currentUser.uid}/memos`).add({
+      body: this.state.body,
+      createdOn: new Date(),
+    })
       .then(() => {
-        this.setState({ body: this.state.body }); // WORKAROUND: bodyもここで更新しておく
-        const { navigation } = this.props;
-        navigation.state.params.returnMemo({
-          body: this.state.body,
-          key: this.state.key,
-          createdOn: newDate,
-        });
-        navigation.goBack();
+        this.setState({ body: this.state.body }); 
+        this.props.navigation.goBack();
       })
       .catch((error) => {
         global.console.log(error);
@@ -53,7 +33,6 @@ class MemoEditScreen extends React.Component {
           multiline
           value={this.state.body}
           onChangeText={(text) => { this.setState({ body: text }); }}
-          underlineColorAndroid="transparent"
           textAlignVertical="top"
         />
         <CircleButton name="check" onPress={this.handlePress.bind(this)} />
@@ -78,4 +57,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default MemoEditScreen;
+export default MemoCreateScreen;
